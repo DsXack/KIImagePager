@@ -33,6 +33,7 @@ typedef void(^KIImagePagerImageRequestBlock)(UIImage*image, NSError * error);
 @optional
 - (void) imagePager:(KIImagePager *)imagePager didScrollToIndex:(NSUInteger)index;
 - (void) imagePager:(KIImagePager *)imagePager didSelectImageAtIndex:(NSUInteger)index;
+- (UIColor *) indicatorColor:(KIImagePager *)imagePager;
 
 @end
 
