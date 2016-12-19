@@ -196,7 +196,7 @@
             activityIndicator.color = [_delegate indicatorColor:self];
         }
 
-        [_scrollView addSubview:activityIndicator];
+        [[_scrollView superview] insertSubview:activityIndicator belowSubview:_scrollView];
         [activityIndicator startAnimating];
 
         for (int i = 0; i < [aImageUrls count]; i++) {
@@ -233,11 +233,6 @@
 
                      if ([_delegate respondsToSelector:@selector(imagePager:didLoadImage:atIndex:)]) {
                          [_delegate imagePager:self didLoadImage:image atIndex:i];
-                     }
-
-                     // Stop and Remove Activity Indicator
-                     if (i == aImageUrls.count - 1) {
-                         [activityIndicator stopAnimating];
                      }
                  }];
             }
