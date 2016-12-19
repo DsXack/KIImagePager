@@ -231,6 +231,9 @@
                      else [imageView setImage:nil];
 
                      [imageView setContentMode:[_dataSource contentModeForImage:i inPager:self]];
+                     if ([_delegate respondsToSelector:@selector(didLoadImage:)]) {
+                         [_delegate didLoadImage:image atIndex:i];
+                     }
 
                      // Stop and Remove Activity Indicator
                      UIActivityIndicatorView *indicatorView = (UIActivityIndicatorView *)[_activityIndicators objectForKey:[NSString stringWithFormat:@"%d", i]];
