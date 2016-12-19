@@ -180,13 +180,24 @@
 - (void) loadData
 {
     NSArray *aImageUrls = (NSArray *)[_dataSource arrayWithImages:self];
-    _activityIndicators = [NSMutableDictionary new];
 
     [self updateCaptionLabelForImageAtIndex:0];
 
     if([aImageUrls count] > 0) {
         [_scrollView setContentSize:CGSizeMake(_scrollView.frame.size.width * [aImageUrls count],
                                                _scrollView.frame.size.height)];
+
+        // Instantiate and show Actvity Indicator
+        UIActivityIndicatorView *activityIndicator = [UIActivityIndicatorView new];
+        activityIndicator.center = (CGPoint){_scrollView.frame.size.width/2, _scrollView.frame.size.height/2};
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+
+        if([_delegate respondsToSelector:@selector(indicatorColor:)]) {
+            activityIndicator.color = [_delegate indicatorColor:self];
+        }
+
+        [_scrollView addSubview:activityIndicator];
+        [activityIndicator startAnimating];
 
         for (int i = 0; i < [aImageUrls count]; i++) {
             CGRect imageFrame = CGRectMake(_scrollView.frame.size.width * i, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
@@ -207,18 +218,6 @@
                 [imageView setImage:(UIImage *)[aImageUrls objectAtIndex:i]];
             } else if([[aImageUrls objectAtIndex:i] isKindOfClass:[NSString class]] ||
                       [[aImageUrls objectAtIndex:i] isKindOfClass:[NSURL class]]) {
-                // Instantiate and show Actvity Indicator
-                UIActivityIndicatorView *activityIndicator = [UIActivityIndicatorView new];
-                activityIndicator.center = (CGPoint){_scrollView.frame.size.width/2, _scrollView.frame.size.height/2};
-                activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
-
-                if([_delegate respondsToSelector:@selector(indicatorColor:)]) {
-                    activityIndicator.color = [_delegate indicatorColor:self];
-                }
-
-                [imageView addSubview:activityIndicator];
-                [activityIndicator startAnimating];
-                [_activityIndicators setObject:activityIndicator forKey:[NSString stringWithFormat:@"%d", i]];
 
                 // Asynchronously retrieve image
                 NSURL * imageUrl  = [[aImageUrls objectAtIndex:i] isKindOfClass:[NSURL class]] ? [aImageUrls objectAtIndex:i] : [NSURL URLWithString:(NSString *)[aImageUrls objectAtIndex:i]];
@@ -237,10 +236,8 @@
                      }
 
                      // Stop and Remove Activity Indicator
-                     UIActivityIndicatorView *indicatorView = (UIActivityIndicatorView *)[_activityIndicators objectForKey:[NSString stringWithFormat:@"%d", i]];
-                     if (indicatorView) {
-                         [indicatorView stopAnimating];
-                         [_activityIndicators removeObjectForKey:[NSString stringWithFormat:@"%d", i]];
+                     if (i == aImageUrls.count - 1) {
+                         [activityIndicator stopAnimating];
                      }
                  }];
             }
